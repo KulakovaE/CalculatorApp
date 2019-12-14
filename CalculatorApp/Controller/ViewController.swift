@@ -9,34 +9,36 @@
 import UIKit
 
 class ViewController: UIViewController {
-
+    
     @IBOutlet weak var displayLabel: UILabel!
     var isFinishedTypeingNumber: Bool = true
     
-    
     private var displayValue: Double {
+        
         get {
             guard let currentDisplayValue = Double(displayLabel.text!) else {
                 fatalError("Cannot convert display label text to a Double")
             }
             return currentDisplayValue
         }
+        
         set {
             displayLabel.text = String(newValue)
         }
     }
     
+    private var calculatorLogic = CalculatorLogic()
+    
     @IBAction func calButtonPressed(_ sender: UIButton) {
-        isFinishedTypeingNumber = true
         
-       
-            if let calMethod = sender.currentTitle {
-                let calculatorLogic = CalculatorLogic(number: displayValue)
-                
-                guard let result = calculatorLogic.calculate(symbol:calMethod) else {
-                    fatalError("The result of the calculation is nil")
-                }
-                displayValue = result
+        isFinishedTypeingNumber = true
+        calculatorLogic.setNumber(displayValue)
+        
+        if let calMethod = sender.currentTitle {
+            
+            if let result = calculatorLogic.calculate(symbol: calMethod) {
+                 displayValue = result
+            }
         }
     }
     
@@ -49,14 +51,12 @@ class ViewController: UIViewController {
             } else {
                 
                 if numberValue == "." {
-                   
-                   let isInt = floor(displayValue) == displayValue
+                    let isInt = floor(displayValue) == displayValue
                     
                     if !isInt {
                         return
                     }
                 }
-                
                 displayLabel.text = (displayLabel.text ?? "") + numberValue
             }
         }
